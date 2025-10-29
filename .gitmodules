@@ -1,0 +1,3 @@
+[submodule "services/compose/freefont.showtimemaker.com"]
+	path = services/compose/freefont.showtimemaker.com
+	url = git@github.com:showtimemaker/freefont.showtimemaker.com.git
