@@ -1,0 +1,12 @@
+# © 2022 ~ 2023 邱泽帆
+
+
+services:
+  letsencrypt_renew:
+    container_name: letsencrypt_renew
+    image: certbot/certbot:v5.1.0
+    command: renew --agree-tos -n --cert-name freefont.showtimemaker.com --webroot-path /webroot --force-renewal
+    volumes:
+      - ../data/letsencrypt/etc/letsencrypt:/etc/letsencrypt
+      - ../data/letsencrypt/webroot:/webroot
+  

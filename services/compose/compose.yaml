@@ -1,0 +1,46 @@
+
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:1.29.3
+    restart: always
+    depends_on:
+      - freefont_showtimemaker_com
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/etc/templates:/etc/nginx/templates:ro
+      - ../data/nginx/var/log/nginx:/var/log/nginx
+      - ../data/letsencrypt/etc/letsencrypt:/etc/letsencrypt:ro
+      - ../data/letsencrypt/webroot:/webroot:ro
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: "7"
+    networks:
+      showtimemaker_bridge:
+        ipv4_address: 10.11.12.2
+  freefont_showtimemaker_com:
+    container_name: freefont_showtimemaker_com
+    build: ./freefont.showtimemaker.com
+    restart: always
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: "7"
+    environment:
+      TZ: Asia/Shanghai
+      LANG: en_US.UTF-8
+    networks:
+      showtimemaker_bridge:
+        ipv4_address: 10.11.12.4
+networks:
+  showtimemaker_bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.11.12.0/24
+          gateway: 10.11.12.1

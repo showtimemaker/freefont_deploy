@@ -1,0 +1,5 @@
+.DS_Store
+downloads/
+services/data
+secrets/
+*.secret.txt

@@ -1,0 +1,9 @@
+# © 2022 ~ 2023 邱泽帆
+
+server {
+  listen       80 ;
+  server_name  freefont.showtimemaker.com;
+  location /.well-known/acme-challenge {
+    alias /webroot/.well-known/acme-challenge;
+  }
+}
