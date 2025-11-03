@@ -3,3 +3,4 @@ downloads/
 services/data
 secrets/
 *.secret.txt
+freefont/

@@ -3,7 +3,17 @@
 server {
   listen       80 ;
   server_name  freefont.showtimemaker.com;
+
+  location / {
+    proxy_set_header  Host               $host;
+    proxy_set_header  X-Real-IP          $remote_addr;
+    proxy_set_header  X-Forwarded-For    $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto  $http_x_forwarded_proto;
+    proxy_pass http://freefont_showtimemaker_com:8000/;
+  }
+  
   location /.well-known/acme-challenge {
     alias /webroot/.well-known/acme-challenge;
   }
+
 }
