@@ -15,7 +15,7 @@ ssh root@8.163.10.159 "
   docker compose build --build-arg GIT_REVISION=$GIT_REVISION freefont_showtimemaker_com || true;
   docker compose stop freefont_showtimemaker_com || true;
   docker compose rm -f freefont_showtimemaker_com || true;
-  docker compose up -d freefont_showtimemaker_com || true;
+  docker compose up -d || true;
   docker system prune -f;
 "
 

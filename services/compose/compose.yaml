@@ -1,31 +1,47 @@
 
 services:
-  nginx:
-    container_name: nginx
-    image: nginx:1.29.3
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.9.0-alpine
+    container_name: nginx-proxy
     restart: always
-    depends_on:
-      - freefont_showtimemaker_com
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx/etc/templates:/etc/nginx/templates:ro
-      - ../data/nginx/var/log/nginx:/var/log/nginx
-      - ../data/letsencrypt/etc/letsencrypt:/etc/letsencrypt:ro
-      - ../data/letsencrypt/webroot:/webroot:ro
-    logging:
-      driver: local
-      options:
-        max-size: 10m
-        max-file: "7"
+      - ../data/nginxproxy/certs:/etc/nginx/certs:rw
+      - ../data/nginxproxy/vhost.d:/etc/nginx/vhost.d
+      - ../data/nginxproxy/html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
       showtimemaker_bridge:
         ipv4_address: 10.11.12.2
+  acme-companion:
+    image: nginxproxy/acme-companion:2.6.1
+    container_name: acme-companion
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - ../data/nginxproxy/certs:/etc/nginx/certs:rw
+      - ../data/nginxproxy/vhost.d:/etc/nginx/vhost.d
+      - ../data/nginxproxy/html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      showtimemaker_bridge:
+        ipv4_address: 10.11.12.3
+  
   freefont_showtimemaker_com:
     container_name: freefont_showtimemaker_com
     build: ./freefont.showtimemaker.com
     restart: always
+    expose:
+      - "8000"
+    environment:
+      - VIRTUAL_HOST=freefont.showtimemaker.com
+      - LETSENCRYPT_HOST=freefont.showtimemaker.com
+      - LETSENCRYPT_EMAIL=admin@showtimemaker.com
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
     logging:
       driver: local
       options:
@@ -33,9 +49,6 @@ services:
         max-file: "7"
     volumes:
       - ./freefont:/app/freefont:ro
-    environment:
-      TZ: Asia/Shanghai
-      LANG: en_US.UTF-8
     networks:
       showtimemaker_bridge:
         ipv4_address: 10.11.12.4
